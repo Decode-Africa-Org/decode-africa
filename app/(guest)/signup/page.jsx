@@ -1,6 +1,5 @@
 "use client";
 import axiosClient from "@/utils/axios";
-import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -15,7 +14,7 @@ const SingUp = () => {
   });
   const router = useRouter();
   const dispatch = useDispatch();
-  const [error, setErrorMessage] = useState("");
+  const [errors, setErrorMessages] = useState("");
 
   const handleChange = (event) => {
     setFormData({
@@ -36,8 +35,8 @@ const SingUp = () => {
       );
       router.push("/");
     } catch (error) {
-      dispatch(loginFailure(error));
-      setErrorMessage(error);
+      console.log(error.response.data.errors);
+      setErrorMessages(error.response.data.errors);
     }
   };
 
@@ -54,7 +53,7 @@ const SingUp = () => {
             Create a new account
           </h2>
           <p className="mt-2 text-center text-sm leading-5 text-gray-500 max-w">
-            Or
+            Or{" "}
             <Link
               href="/login"
               className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus:underline transition ease-in-out duration-150"
@@ -64,6 +63,27 @@ const SingUp = () => {
           </p>
         </div>
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+          <div className="mt-6">
+            {Object.keys(errors).length > 0 && (
+              <div className="my-2 bg-red-500 rounded p-4">
+                <ul>
+                  {Object.keys(errors).map((key) => (
+                    <li key={key}>
+                      {Array.isArray(errors[key]) ? (
+                        errors[key].map((errorMessage, index) => (
+                          <p key={index} className="text-white">
+                            {errorMessage}
+                          </p>
+                        ))
+                      ) : (
+                        <p className="text-white">{errors[key]}</p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <form onSubmit={handleSubmit}>
               <div>
